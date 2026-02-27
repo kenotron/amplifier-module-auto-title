@@ -1,126 +1,119 @@
-# amplifier-template
+# amplifier-bundle-terminal-title
 
-An opinionated [Amplifier](https://github.com/microsoft/amplifier) starter — everything you need to have a capable AI assistant running in your project in under 5 minutes, with no prior knowledge of Amplifier required.
+An [Amplifier](https://github.com/microsoft/amplifier) behavior bundle that automatically updates the terminal window/tab title to reflect what the AI agent is working on.
 
----
-
-## Getting Started
-
-Two prerequisites, then four commands. That's it.
-
-### Prerequisites
-
-- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** — Python package manager
-
-  ```bash
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-
-- **[gh](https://cli.github.com/)** — GitHub CLI (and run `gh auth login` if you haven't already)
-
-  ```bash
-  # macOS
-  brew install gh
-
-  # Windows / Linux: https://cli.github.com/
-  ```
+Adapted from [claude-code-terminal-title](https://github.com/bluzername/claude-code-terminal-title) by bluzername.
 
 ---
 
-### Step 1 — Install Amplifier
+## What It Does
 
-```bash
-uv tool install git+https://github.com/microsoft/amplifier
+When you're running multiple terminal sessions, it's easy to lose track of which one is doing what. This bundle teaches the Amplifier agent to set descriptive, human-readable titles:
+
+```
+my-project | Build: Dashboard UI
+my-project | Debug: Auth Flow
+my-project | Test: Payment Module
 ```
 
----
-
-### Step 2 — Create your project from this template
-
-```bash
-gh repo create my-project --template kenotron-ms/amplifier-template --public --clone
-cd my-project
-```
-
-Replace `my-project` with whatever you want to call your repo. Use `--private` if you prefer.
+The agent sets the title at the start of each session and updates it when switching to a substantially different task.
 
 ---
 
-### Step 3 — Initialize
+## Quick Start
 
-```bash
-amplifier init
+Add to your `.amplifier/bundle.md`:
+
+```yaml
+includes:
+  - bundle: git+https://github.com/yourusername/amplifier-bundle-terminal-title@main
 ```
 
-The wizard will ask for your AI provider and API key (Anthropic, OpenAI, Azure, Gemini, or Ollama) and wire everything up automatically.
+That's it. The bundle includes foundation and the terminal-title behavior.
 
 ---
 
-### Step 4 — Start chatting
+## Just the Behavior (Recommended for Existing Bundles)
 
-```bash
-amplifier
+If you already have your own bundle and just want to add terminal titling:
+
+```yaml
+includes:
+  - bundle: git+https://github.com/microsoft/amplifier-foundation@main
+  - bundle: git+https://github.com/yourusername/amplifier-bundle-terminal-title@main#subdirectory=behaviors/terminal-title.yaml
+  - bundle: myapp:behaviors/my-other-behavior
 ```
-
-That's it. You now have a fully configured AI assistant with persistent memory, multi-agent capabilities, structured workflows, and more — all scoped to your project.
 
 ---
 
 ## What's Included
 
-This template is a curated set of Amplifier behaviors. Here's what you get out of the box:
-
-### Behaviors
-
-| Behavior | What it gives you |
-|----------|-------------------|
-| **amplifier-expert** | Built-in consultant for the Amplifier ecosystem itself — ask it anything about modules, bundles, or configuration |
-| **agents** | Spawns specialist sub-agents automatically for heavy tasks (code exploration, debugging, architecture, git operations, web research) |
-| **streaming-ui** | Responses stream in real time instead of appearing all at once |
-| **status-context** | The assistant always knows your current git branch, working directory, and the date — no need to tell it |
-| **todo-reminder** | Keeps the assistant on track during multi-step work with a visible task list |
-| **redaction** | Scrubs secrets and API keys from output before they can leak |
-| **recipes** | Reusable multi-step workflows with approval gates — great for things like full feature development cycles |
-| **modes** | Behavioral overlays you can toggle: `/brainstorm`, `/debug`, `/execute-plan`, `/verify`, `/finish` |
-| **skills** | Domain knowledge packages that load on demand — bring structured best practices into any session |
-| **apply-patch** | Lets the assistant make precise multi-file edits in a single operation |
-| **engram** | Persistent memory — the assistant remembers context across sessions |
-
-### Sub-Agents (called automatically when needed)
-
-| Agent | What it handles |
-|-------|----------------|
-| `explorer` | Surveying large codebases across many files |
-| `file-ops` | Targeted file reads, writes, and searches |
-| `git-ops` | Commits, PRs, branch management, GitHub API |
-| `bug-hunter` | Systematic debugging |
-| `modular-builder` | Implementing from a spec |
-| `zen-architect` | Architecture design, code review, planning |
-| `web-research` | Multi-source web research |
-
-### Session Configuration
-
-| Setting | Value |
-|---------|-------|
-| Orchestrator | `loop-streaming` (real-time output) |
-| Extended thinking | Enabled |
-| Max context | 200,000 tokens |
-| Auto-compact | Yes — long sessions stay running automatically |
+| File | Purpose |
+|------|---------|
+| `bundle.md` | Root bundle (foundation + this behavior) |
+| `behaviors/terminal-title.yaml` | The composable behavior — includes skill and context |
+| `skills/terminal-title.md` | Skill: teaches the agent when/how to set titles |
+| `context/terminal-title-awareness.md` | Brief awareness prompt injected at session start |
+| `scripts/set_title.sh` | Optional: standalone shell script for projects that prefer it |
 
 ---
 
-## Extending This Template
+## How It Works
 
-Add more behaviors by editing `.amplifier/bundle.md` and appending to the `includes:` list:
+The bundle is **skill-driven**: the agent uses the `load_skill` tool to learn the title-setting conventions and applies them using `bash`. No custom Python hook module is needed.
 
-```yaml
-includes:
-  - bundle: git+https://github.com/your-org/your-bundle@main#subdirectory=behaviors/your-behavior.yaml
+**Flow:**
+1. Session starts → awareness context prompts the agent to load the skill
+2. Agent loads `terminal-title` skill → learns format rules and the bash command
+3. Agent runs `printf '\033]0;%s | %s\007'` inline to set the title
+4. Agent updates the title again when switching to a new high-level task
+
+**ANSI compatibility:** Works with macOS Terminal, iTerm2, Alacritty, xterm, rxvt, tmux, screen, and most modern terminal emulators.
+
+---
+
+## Customization
+
+### Custom prefix via environment variable
+
+```bash
+export CLAUDE_TITLE_PREFIX="🤖"
+# Produces: "🤖 my-project | Build: Dashboard UI"
 ```
 
-See the [Amplifier Foundation Bundle Guide](https://github.com/microsoft/amplifier-foundation) for how to author your own.
+### Optional shell script
+
+Copy `scripts/set_title.sh` to your project root and call it instead of the inline command:
+
+```bash
+bash scripts/set_title.sh "Build: Dashboard UI"
+```
+
+The script handles sanitization, the directory prefix, and `CLAUDE_TITLE_PREFIX` automatically.
 
 ---
+
+## Title Format
+
+```
+[current-dir] | [Action]: [Specific Focus]
+```
+
+| Situation | Title |
+|-----------|-------|
+| Building a feature | `Build: Dashboard UI` |
+| Debugging an issue | `Debug: Auth Flow` |
+| Writing tests | `Test: Payment Module` |
+| Refactoring code | `Refactor: API Layer` |
+| Database work | `DB: Users Migration` |
+| Infrastructure | `Infra: Docker Setup` |
+
+---
+
+## Credits
+
+- Original skill and scripts by [bluzername](https://github.com/bluzername/claude-code-terminal-title)
+- Adapted for the Amplifier ecosystem
 
 ## License
 
