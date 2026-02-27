@@ -28,6 +28,9 @@ includes:
   - bundle: git+https://github.com/microsoft/amplifier-bundle-filesystem@main#subdirectory=behaviors/apply-patch.yaml
 
   # ── Memory / engram ───────────────────────────────────────────────────────────
+  # ── Stories (content creation & submission) ──────────────────────────────────
+  - bundle: git+https://github.com/microsoft/amplifier-bundle-stories@main#subdirectory=behaviors/stories.yaml
+
   - bundle: git+https://github.com/kenotron-ms/engram@main#subdirectory=behaviors/engram.yaml
 
 session:
