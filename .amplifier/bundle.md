@@ -5,7 +5,7 @@ bundle:
   description: Opinionated slim Amplifier starter — cherry-picked behaviors, no bloat.
 
 includes:
-  # ── Ecosystem expert (registers @amplifier: namespace) ──────────────────────
+  # ── Ecosystem expert (registers @amplifier: namespace) ────────────────────────
   - bundle: git+https://github.com/microsoft/amplifier@main#subdirectory=behaviors/amplifier-expert.yaml
 
   # ── Foundation behaviors (registers @foundation: namespace without full bundle) ─
@@ -16,15 +16,18 @@ includes:
   - bundle: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=behaviors/todo-reminder.yaml
   - bundle: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=behaviors/redaction.yaml
 
-  # ── Workflow & methodology ───────────────────────────────────────────────────
+  # ── Workflow & methodology ─────────────────────────────────────────────────────
   - bundle: git+https://github.com/microsoft/amplifier-bundle-recipes@main#subdirectory=behaviors/recipes.yaml
   - bundle: git+https://github.com/microsoft/amplifier-bundle-modes@main
   - bundle: git+https://github.com/microsoft/amplifier-bundle-skills@main#subdirectory=behaviors/skills.yaml
 
-  # ── File editing (apply_patch tool) ─────────────────────────────────────────
+  # ── Terminal title ─────────────────────────────────────────────────────────────
+  - bundle: git+https://github.com/kenotron/amplifier-module-auto-title@main#subdirectory=behaviors/terminal-title.yaml
+
+  # ── File editing (apply_patch tool) ───────────────────────────────────────────
   - bundle: git+https://github.com/microsoft/amplifier-bundle-filesystem@main#subdirectory=behaviors/apply-patch.yaml
 
-  # ── Memory / engram ──────────────────────────────────────────────────────────
+  # ── Memory / engram ───────────────────────────────────────────────────────────
   - bundle: git+https://github.com/kenotron-ms/engram@main#subdirectory=behaviors/engram.yaml
 
 session:
