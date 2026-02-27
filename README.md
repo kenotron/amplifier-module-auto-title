@@ -26,7 +26,7 @@ Add to your `.amplifier/bundle.md`:
 
 ```yaml
 includes:
-  - bundle: git+https://github.com/yourusername/amplifier-bundle-terminal-title@main
+  - bundle: git+https://github.com/kenotron/amplifier-module-auto-title@main
 ```
 
 That's it. The bundle includes foundation and the terminal-title behavior.
@@ -40,7 +40,7 @@ If you already have your own bundle and just want to add terminal titling:
 ```yaml
 includes:
   - bundle: git+https://github.com/microsoft/amplifier-foundation@main
-  - bundle: git+https://github.com/yourusername/amplifier-bundle-terminal-title@main#subdirectory=behaviors/terminal-title.yaml
+  - bundle: git+https://github.com/kenotron/amplifier-module-auto-title@main#subdirectory=behaviors/terminal-title.yaml
   - bundle: myapp:behaviors/my-other-behavior
 ```
 
